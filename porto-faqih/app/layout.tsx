@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import 'react-notion-x/src/styles.css';
+import 'prismjs/themes/prism-tomorrow.css';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
