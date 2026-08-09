@@ -4,17 +4,43 @@
 import { useState } from 'react'
 import RichText from './RichText'
 
-const calloutColors: Record<string, string> = {
-  default: '#f1f1ef',
-  gray_background: '#ebeced',
-  brown_background: '#e9e5e3',
-  orange_background: '#faebdd',
-  yellow_background: '#fbf3db',
-  green_background: '#edf3ec',
-  blue_background: '#e7f3f8',
-  purple_background: '#f6f3f9',
-  pink_background: '#faf1f5',
-  red_background: '#fdebec',
+// Palet warna versi DARK MODE (sesuai tampilan Notion kamu yang gelap)
+const bgColors: Record<string, string> = {
+  gray_background: '#3f3f3f',
+  brown_background: '#4a3228',
+  orange_background: '#5c3b23',
+  yellow_background: '#564328',
+  green_background: '#243831',
+  blue_background: '#143a4e',
+  purple_background: '#3c2d49',
+  pink_background: '#4e2c3c',
+  red_background: '#522e2a',
+}
+
+const textColors: Record<string, string> = {
+  gray: '#979A9B',
+  brown: '#937264',
+  orange: '#FFA344',
+  yellow: '#FFDC49',
+  green: '#4DAB9A',
+  blue: '#529CCA',
+  purple: '#9A6DD7',
+  pink: '#E255A1',
+  red: '#FF7369',
+}
+
+// Terapkan warna Notion (bisa background atau teks) ke style
+function colorStyle(color: string | undefined): React.CSSProperties {
+  if (!color || color === 'default') return {}
+  if (color.endsWith('_background')) {
+    return {
+      background: bgColors[color] || 'transparent',
+      padding: '2px 8px',
+      borderRadius: 4,
+      display: 'inline-block',
+    }
+  }
+  return { color: textColors[color] || undefined }
 }
 
 export default function NotionBlock({ block }: { block: any }) {
@@ -24,35 +50,35 @@ export default function NotionBlock({ block }: { block: any }) {
   switch (type) {
     case 'paragraph':
       return (
-        <p style={{ margin: '4px 0', lineHeight: 1.6 }}>
+        <p style={{ margin: '4px 0', lineHeight: 1.6, ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
         </p>
       )
 
     case 'heading_1':
       return (
-        <h1 style={{ fontSize: '1.875rem', fontWeight: 700, marginTop: '1.5rem' }}>
+        <h1 style={{ fontSize: '1.875rem', fontWeight: 700, marginTop: '1.5rem', ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
         </h1>
       )
 
     case 'heading_2':
       return (
-        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '1.25rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginTop: '1.25rem', ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
         </h2>
       )
 
     case 'heading_3':
       return (
-        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginTop: '1rem' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginTop: '1rem', ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
         </h3>
       )
 
     case 'bulleted_list_item':
       return (
-        <li style={{ marginLeft: '1.5rem', lineHeight: 1.6 }}>
+        <li style={{ marginLeft: '1.5rem', lineHeight: 1.6, ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
           {block.children?.map((c: any) => <NotionBlock key={c.id} block={c} />)}
         </li>
@@ -60,7 +86,7 @@ export default function NotionBlock({ block }: { block: any }) {
 
     case 'numbered_list_item':
       return (
-        <li style={{ marginLeft: '1.5rem', lineHeight: 1.6, listStyleType: 'decimal' }}>
+        <li style={{ marginLeft: '1.5rem', lineHeight: 1.6, listStyleType: 'decimal', ...colorStyle(value.color) }}>
           <RichText text={value.rich_text} />
           {block.children?.map((c: any) => <NotionBlock key={c.id} block={c} />)}
         </li>
@@ -70,7 +96,7 @@ export default function NotionBlock({ block }: { block: any }) {
       return (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', margin: '4px 0' }}>
           <input type="checkbox" checked={value.checked} readOnly />
-          <span style={{ textDecoration: value.checked ? 'line-through' : 'none' }}>
+          <span style={{ textDecoration: value.checked ? 'line-through' : 'none', ...colorStyle(value.color) }}>
             <RichText text={value.rich_text} />
           </span>
         </div>
@@ -80,10 +106,11 @@ export default function NotionBlock({ block }: { block: any }) {
       return (
         <blockquote
           style={{
-            borderLeft: '3px solid #333',
+            borderLeft: '3px solid #555',
             paddingLeft: '1rem',
             margin: '1rem 0',
             fontStyle: 'italic',
+            ...colorStyle(value.color),
           }}
         >
           <RichText text={value.rich_text} />
@@ -99,7 +126,7 @@ export default function NotionBlock({ block }: { block: any }) {
             padding: '1rem',
             borderRadius: 8,
             margin: '0.5rem 0',
-            background: calloutColors[value.color] || calloutColors.default,
+            background: bgColors[value.color] || '#3f3f3f',
           }}
         >
           {value.icon?.emoji && <span>{value.icon.emoji}</span>}
@@ -113,13 +140,13 @@ export default function NotionBlock({ block }: { block: any }) {
       return <Toggle block={block} />
 
     case 'divider':
-      return <hr style={{ margin: '1.5rem 0', border: 'none', borderTop: '1px solid #eee' }} />
+      return <hr style={{ margin: '1.5rem 0', border: 'none', borderTop: '1px solid #333' }} />
 
     case 'code':
       return (
         <pre
           style={{
-            background: '#f7f6f3',
+            background: '#2b2b2b',
             padding: '1rem',
             borderRadius: 6,
             overflowX: 'auto',
@@ -143,22 +170,19 @@ export default function NotionBlock({ block }: { block: any }) {
       )
     }
 
-    case 'divider':
-      return <hr />
-
     case 'bookmark':
       return (
         
-          href={value.url}
+        <a href={value.url}
           target="_blank"
           rel="noreferrer"
           style={{
             display: 'block',
-            border: '1px solid #eee',
+            border: '1px solid #333',
             borderRadius: 8,
             padding: '0.75rem 1rem',
             margin: '0.5rem 0',
-            color: '#337ea9',
+            color: '#529CCA',
           }}
         >
           {value.url}
@@ -180,7 +204,7 @@ export default function NotionBlock({ block }: { block: any }) {
       )
 
     default:
-      return null // block type belum di-handle, aman diabaikan
+      return null
   }
 }
 
